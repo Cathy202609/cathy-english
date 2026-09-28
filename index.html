@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cathy's 英语每日打卡 · 在线版（96课）</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#ffffff; --ink:#1f2937; --sub:#6b7280;
+    --brand:#2563eb; --brand-soft:#eff4ff; --line:#e5e7eb;
+    --green:#16a34a; --amber:#d97706; --red:#dc2626; --ok:#0f9d58;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;padding:18px;}
+  .wrap{max-width:860px;margin:0 auto;}
+  header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+  .title{font-size:22px;font-weight:800;display:flex;align-items:center;gap:8px;}
+  .badge{font-size:12px;color:var(--brand);background:var(--brand-soft);padding:3px 10px;border-radius:999px;font-weight:600;}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;}
+  .lessonbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .lessonbar select{padding:8px 10px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-family:inherit;background:#fff;max-width:260px;cursor:pointer;}
+  .lessonbar .progress{font-size:12px;color:var(--sub);margin-left:auto;}
+  button{font-family:inherit;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);
+    padding:8px 13px;border-radius:10px;font-size:13px;font-weight:600;transition:.15s;}
+  button:hover{border-color:var(--brand);color:var(--brand);}
+  button.primary{background:var(--brand);color:#fff;border-color:var(--brand);}
+  button.primary:hover{background:#1d4ed8;color:#fff;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:14px;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .card h2{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:8px;}
+  .meta{color:var(--sub);font-size:13px;margin-bottom:10px;}
+  .video-box{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;background:#000;}
+  .video-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .lesson-note{margin-top:10px;font-size:14px;background:var(--brand-soft);color:#1e40af;padding:10px 12px;border-radius:10px;}
+  .tip{margin-top:8px;font-size:13px;background:#fff7e6;color:#8a5a00;border:1px solid #ffe0a3;padding:8px 12px;border-radius:10px;}
+  .task{margin-top:8px;font-size:13px;color:var(--sub);}
+  ol.vocab{margin:0;padding-left:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+  ol.vocab li{padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px;}
+  .w{font-weight:700;}
+  .ph{color:var(--brand);font-size:13px;}
+  .pos{color:var(--sub);font-size:12px;margin:0 4px;}
+  .m{color:var(--ink);}
+  .hide .m{visibility:hidden;}
+  .unit{font-size:13px;color:var(--brand);font-weight:700;margin-bottom:6px;}
+  .gram-img{width:100%;border-radius:10px;border:1px solid var(--line);cursor:pointer;}
+  .gram-img:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);}
+  .speech-topic{font-size:16px;font-weight:700;margin:6px 0 8px;}
+  .durations{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  .timer{margin-top:14px;text-align:center;}
+  .timer .status{font-size:18px;font-weight:800;min-height:28px;}
+  .timer .big{font-size:46px;font-weight:900;letter-spacing:2px;margin:6px 0;font-variant-numeric:tabular-nums;}
+  .timer .log{font-size:14px;color:var(--amber);min-height:22px;font-weight:600;}
+  .logbox{margin-top:10px;font-size:13px;color:var(--sub);text-align:left;max-height:160px;overflow:auto;
+    background:#f9fafb;border-radius:10px;padding:10px;display:none;}
+  .logbox.show{display:block;}
+  .logbox div{padding:2px 0;border-bottom:1px dotted var(--line);}
+  .replay{display:none;margin-top:10px;}
+  @media(max-width:640px){ol.vocab{grid-template-columns:1fr;}}
+  footer{text-align:center;color:var(--sub);font-size:12px;margin:10px 0 30px;}
+
+  /* 登录遮罩 */
+  #loginOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#1e3a8a,#2563eb);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+  #loginOverlay.hidden{display:none;}
+  .login-card{background:#fff;border-radius:18px;padding:28px 26px;width:100%;max-width:360px;box-shadow:0 12px 40px rgba(0,0,0,.25);}
+  .login-card h1{margin:0 0 4px;font-size:20px;}
+  .login-card .sub{color:var(--sub);font-size:13px;margin-bottom:6px;}
+  .login-card label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px;}
+  .login-card input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box;}
+  .login-card input:focus{outline:none;border-color:var(--brand);}
+  .login-card .err{color:var(--red);font-size:13px;min-height:18px;margin-top:10px;font-weight:600;}
+  .login-card .login-btn{width:100%;margin-top:14px;padding:12px;font-size:15px;}
+  .login-card .note{margin-top:14px;font-size:12px;color:var(--sub);line-height:1.5;}
+</style>
+</head>
+<body>
+<div id="loginOverlay">
+  <form class="login-card" id="loginForm" autocomplete="off">
+    <h1>🔐 Cathy's 英语每日打卡</h1>
+    <div class="sub">请输入账号密码登录</div>
+    <label for="lu">用户名</label>
+    <input id="lu" type="text" placeholder="如 cathy01" autocomplete="username" />
+    <label for="lp">密码</label>
+    <input id="lp" type="password" placeholder="8 位密码" autocomplete="current-password" />
+    <div class="err" id="loginErr"></div>
+    <button class="primary login-btn" type="submit">登 录</button>
+    <div class="note">首次登录后本浏览器永久记住登录状态（无需重复输入）。每个账号最多可在 5 台设备登录，达上限后账号停用。</div>
+  </form>
+</div>
+<div class="wrap">
+  <header>
+    <div class="title">📚 Cathy's 英语每日打卡 <span class="badge" id="diffBadge">第 1 课 / 96</span></div>
+    <div class="toolbar">
+      <button id="btnReplay">📝 打卡复盘</button>
+      <button id="btnLogout" style="display:none">退出登录</button>
+    </div>
+  </header>
+
+  <div class="lessonbar">
+    <button id="btnPrev">‹ 上一课</button>
+    <select id="lessonSelect" aria-label="选择课次"></select>
+    <button id="btnNext">下一课 ›</button>
+    <button id="btnHome">♻ 从第 1 课开始</button>
+    <span class="progress" id="progressText"></span>
+  </div>
+
+  <div id="app"></div>
+
+  <footer>在线版 · 新概念英语第二册 96 课 ×《English Grammar in Use》96 单元 · 顶部可任选课次，进度自动保存</footer>
+</div>
+
+<script>
+/* ===================== 数据 ===================== */
+const NCE2 = [{"lesson": 1, "title": "A private conversation", "bvid": "BV1wdx2zQEbu", "page": 1}, {"lesson": 2, "title": "Breakfast or lunch", "bvid": "BV1wdx2zQEbu", "page": 2}, {"lesson": 3, "title": "Please send me a card", "bvid": "BV1wdx2zQEbu", "page": 3}, {"lesson": 4, "title": "An exciting trip", "bvid": "BV1wdx2zQEbu", "page": 4}, {"lesson": 5, "title": "No wrong numbers", "bvid": "BV1wdx2zQEbu", "page": 5}, {"lesson": 6, "title": "Percy Buttons", "bvid": "BV1wdx2zQEbu", "page": 6}, {"lesson": 7, "title": "Too late", "bvid": "BV1wdx2zQEbu", "page": 7}, {"lesson": 8, "title": "The best and the worst", "bvid": "BV1wdx2zQEbu", "page": 8}, {"lesson": 9, "title": "A cold welcome", "bvid": "BV1wdx2zQEbu", "page": 9}, {"lesson": 10, "title": "Not for jazz", "bvid": "BV1wdx2zQEbu", "page": 10}, {"lesson": 11, "title": "One good turn deserves another", "bvid": "BV1wdx2zQEbu", "page": 11}, {"lesson": 12, "title": "Goodbye and good luck", "bvid": "BV1wdx2zQEbu", "page": 12}, {"lesson": 13, "title": "The greenwood Boys", "bvid": "BV1wdx2zQEbu", "page": 13}, {"lesson": 14, "title": "Do you speak English?", "bvid": "BV1wdx2zQEbu", "page": 14}, {"lesson": 15, "title": "Good news", "bvid": "BV1wdx2zQEbu", "page": 15}, {"lesson": 16, "title": "A polite request", "bvid": "BV1wdx2zQEbu", "page": 16}, {"lesson": 17, "title": "Always young", "bvid": "BV1wdx2zQEbu", "page": 17}, {"lesson": 18, "title": "He always does this!", "bvid": "BV1wdx2zQEbu", "page": 18}, {"lesson": 19, "title": "Sold out", "bvid": "BV1wdx2zQEbu", "page": 19}, {"lesson": 20, "title": "One man in a boat", "bvid": "BV1wdx2zQEbu", "page": 20}, {"lesson": 21, "title": "Mad or not", "bvid": "BV1wdx2zQEbu", "page": 21}, {"lesson": 22, "title": "A glass envelope", "bvid": "BV1wdx2zQEbu", "page": 22}, {"lesson": 23, "title": "A new house", "bvid": "BV1wdx2zQEbu", "page": 23}, {"lesson": 24, "title": "It could be worse", "bvid": "BV1wdx2zQEbu", "page": 24}, {"lesson": 25, "title": "Do the English speak English?", "bvid": "BV1wdx2zQEbu", "page": 25}, {"lesson": 26, "title": "The best art critics", "bvid": "BV1wdx2zQEbu", "page": 26}, {"lesson": 27, "title": "A wet night", "bvid": "BV1wdx2zQEbu", "page": 27}, {"lesson": 28, "title": "No parking!", "bvid": "BV1wdx2zQEbu", "page": 28}, {"lesson": 29, "title": "Taxi!", "bvid": "BV1wdx2zQEbu", "page": 29}, {"lesson": 30, "title": "Football or polo?", "bvid": "BV1wdx2zQEbu", "page": 30}, {"lesson": 31, "title": "Success story", "bvid": "BV1wdx2zQEbu", "page": 31}, {"lesson": 32, "title": "Shopping made easy", "bvid": "BV1wdx2zQEbu", "page": 32}, {"lesson": 33, "title": "Out of the darkness", "bvid": "BV1wdx2zQEbu", "page": 33}, {"lesson": 34, "title": "Quick work", "bvid": "BV1wdx2zQEbu", "page": 34}, {"lesson": 35, "title": "Stop thief", "bvid": "BV1wdx2zQEbu", "page": 35}, {"lesson": 36, "title": "Across the channel", "bvid": "BV1wdx2zQEbu", "page": 36}, {"lesson": 37, "title": "The Olympic Games", "bvid": "BV1wdx2zQEbu", "page": 37}, {"lesson": 38, "title": "Everything except the weather", "bvid": "BV1wdx2zQEbu", "page": 38}, {"lesson": 39, "title": "Am I all right?", "bvid": "BV1wdx2zQEbu", "page": 39}, {"lesson": 40, "title": "Food and talk", "bvid": "BV1wdx2zQEbu", "page": 40}, {"lesson": 41, "title": "Do you call that a hat?", "bvid": "BV1wdx2zQEbu", "page": 41}, {"lesson": 42, "title": "Not that musical", "bvid": "BV1wdx2zQEbu", "page": 42}, {"lesson": 43, "title": "Over the south pole", "bvid": "BV1wdx2zQEbu", "page": 43}, {"lesson": 44, "title": "Through the forest", "bvid": "BV1wdx2zQEbu", "page": 44}, {"lesson": 45, "title": "A clear conscience", "bvid": "BV1wdx2zQEbu", "page": 45}, {"lesson": 46, "title": "Expensive and uncomfortable", "bvid": "BV1wdx2zQEbu", "page": 46}, {"lesson": 47, "title": "A thristy ghost", "bvid": "BV1wdx2zQEbu", "page": 47}, {"lesson": 48, "title": "Did you want to tell me something?", "bvid": "BV1wdx2zQEbu", "page": 48}, {"lesson": 49, "title": "The end of a dream", "bvid": "BV1wdx2zQEbu", "page": 49}, {"lesson": 50, "title": "Taken for a ride", "bvid": "BV1wdx2zQEbu", "page": 50}, {"lesson": 51, "title": "Reward for virtue", "bvid": "BV1wdx2zQEbu", "page": 51}, {"lesson": 52, "title": "A pretty carpet", "bvid": "BV1wdx2zQEbu", "page": 52}, {"lesson": 53, "title": "Hot snake", "bvid": "BV1wdx2zQEbu", "page": 53}, {"lesson": 54, "title": "Sticky fingers", "bvid": "BV1wdx2zQEbu", "page": 54}, {"lesson": 55, "title": "Not a gold mine", "bvid": "BV1wdx2zQEbu", "page": 55}, {"lesson": 56, "title": "Faster than sound!", "bvid": "BV1wdx2zQEbu", "page": 56}, {"lesson": 57, "title": "Can I help you, madam?", "bvid": "BV1wdx2zQEbu", "page": 57}, {"lesson": 58, "title": "A blessing in disguise?", "bvid": "BV1wdx2zQEbu", "page": 58}, {"lesson": 59, "title": "In or out?", "bvid": "BV1wdx2zQEbu", "page": 59}, {"lesson": 60, "title": "The future", "bvid": "BV1wdx2zQEbu", "page": 60}, {"lesson": 61, "title": "Trouble with the Hubble", "bvid": "BV1wdx2zQEbu", "page": 61}, {"lesson": 62, "title": "After the fire", "bvid": "BV1wdx2zQEbu", "page": 62}, {"lesson": 63, "title": "She was not amused", "bvid": "BV1wdx2zQEbu", "page": 63}, {"lesson": 64, "title": "The Channel Tunnel", "bvid": "BV1wdx2zQEbu", "page": 64}, {"lesson": 65, "title": "Jumbo versus the police", "bvid": "BV1wdx2zQEbu", "page": 65}, {"lesson": 66, "title": "Sweet as honey!", "bvid": "BV1wdx2zQEbu", "page": 66}, {"lesson": 67, "title": "Volcanoes", "bvid": "BV1wdx2zQEbu", "page": 67}, {"lesson": 68, "title": "Persistent", "bvid": "BV1wdx2zQEbu", "page": 68}, {"lesson": 69, "title": "But not murder!", "bvid": "BV1wdx2zQEbu", "page": 69}, {"lesson": 70, "title": "Red for danger", "bvid": "BV1wdx2zQEbu", "page": 70}, {"lesson": 71, "title": "A famous clock", "bvid": "BV1wdx2zQEbu", "page": 71}, {"lesson": 72, "title": "A car called bluebird", "bvid": "BV1wdx2zQEbu", "page": 72}, {"lesson": 73, "title": "The record-holder", "bvid": "BV1wdx2zQEbu", "page": 73}, {"lesson": 74, "title": "Out of the limelight", "bvid": "BV1wdx2zQEbu", "page": 74}, {"lesson": 75, "title": "SOS", "bvid": "BV1wdx2zQEbu", "page": 75}, {"lesson": 76, "title": "April Fools Day", "bvid": "BV1wdx2zQEbu", "page": 76}, {"lesson": 77, "title": "A successful operation", "bvid": "BV1wdx2zQEbu", "page": 77}, {"lesson": 78, "title": "The last one?", "bvid": "BV1wdx2zQEbu", "page": 78}, {"lesson": 79, "title": "By air", "bvid": "BV1wdx2zQEbu", "page": 79}, {"lesson": 80, "title": "The Crystal Palace", "bvid": "BV1wdx2zQEbu", "page": 80}, {"lesson": 81, "title": "Escape", "bvid": "BV1wdx2zQEbu", "page": 81}, {"lesson": 82, "title": "Monster or fish?", "bvid": "BV1wdx2zQEbu", "page": 82}, {"lesson": 83, "title": "After the elections", "bvid": "BV1wdx2zQEbu", "page": 83}, {"lesson": 84, "title": "On strike", "bvid": "BV1wdx2zQEbu", "page": 84}, {"lesson": 85, "title": "Never too old to learn", "bvid": "BV1wdx2zQEbu", "page": 85}, {"lesson": 86, "title": "Out of control", "bvid": "BV1wdx2zQEbu", "page": 86}, {"lesson": 87, "title": "A perfect alibi", "bvid": "BV1wdx2zQEbu", "page": 87}, {"lesson": 88, "title": "Trapped in a mine", "bvid": "BV1wdx2zQEbu", "page": 88}, {"lesson": 89, "title": "A slip of the tongue", "bvid": "BV1wdx2zQEbu", "page": 89}, {"lesson": 90, "title": "What's for supper?", "bvid": "BV1wdx2zQEbu", "page": 90}, {"lesson": 91, "title": "Three men in a basket", "bvid": "BV1wdx2zQEbu", "page": 91}, {"lesson": 92, "title": "Asking for trouble", "bvid": "BV1wdx2zQEbu", "page": 92}, {"lesson": 93, "title": "A noble gift", "bvid": "BV1wdx2zQEbu", "page": 93}, {"lesson": 94, "title": "Future champions", "bvid": "BV1wdx2zQEbu", "page": 94}, {"lesson": 95, "title": "A fantasy", "bvid": "BV1wdx2zQEbu", "page": 95}, {"lesson": 96, "title": "The dead return", "bvid": "BV1wdx2zQEbu", "page": 96}];
+const VOCAB = [[["private", "/ˈpraɪvət/", "adj.", "私人的"], ["conversation", "/ˌkɒnvəˈseɪʃn/", "n.", "谈话"], ["theatre", "/ˈθɪətə(r)/", "n.", "剧院"], ["seat", "/siːt/", "n.", "座位"], ["play", "/pleɪ/", "n.", "戏剧；剧本"], ["loud", "/laʊd/", "adj.", "大声的"], ["angry", "/ˈæŋɡri/", "adj.", "生气的"], ["attention", "/əˈtenʃn/", "n.", "注意"], ["business", "/ˈbɪznəs/", "n.", "事；生意"], ["rude", "/ruːd/", "adj.", "无礼的"]], [["until", "/ənˈtɪl/", "prep.", "直到"], ["outside", "/ˌaʊtˈsaɪd/", "adv.", "在外面"], ["ring", "/rɪŋ/", "v.", "鸣；响"], ["repeat", "/rɪˈpiːt/", "v.", "重复"], ["aunt", "/ɑːnt/", "n.", "姑；姨"], ["enjoy", "/ɪnˈdʒɔɪ/", "v.", "享受"], ["breakfast", "/ˈbrekfəst/", "n.", "早餐"], ["lunch", "/lʌntʃ/", "n.", "午餐"], ["always", "/ˈɔːlweɪz/", "adv.", "总是"], ["stay", "/steɪ/", "v.", "停留"]], [["send", "/send/", "v.", "寄；送"], ["postcard", "/ˈpəʊstkɑːd/", "n.", "明信片"], ["spoil", "/spɔɪl/", "v.", "破坏；宠坏"], ["museum", "/mjuˈziːəm/", "n.", "博物馆"], ["public", "/ˈpʌblɪk/", "adj.", "公共的"], ["friendly", "/ˈfrendli/", "adj.", "友好的"], ["waiter", "/ˈweɪtə(r)/", "n.", "服务员"], ["lend", "/lend/", "v.", "借出"], ["decision", "/dɪˈsɪʒn/", "n.", "决定"], ["single", "/ˈsɪŋɡl/", "adj.", "单一的"]], [["exciting", "/ɪkˈsaɪtɪŋ/", "adj.", "令人兴奋的"], ["receive", "/rɪˈsiːv/", "v.", "收到"], ["firm", "/fɜːm/", "n.", "公司"], ["different", "/ˈdɪfrənt/", "adj.", "不同的"], ["centre", "/ˈsentə(r)/", "n.", "中心"], ["abroad", "/əˈbrɔːd/", "adv.", "国外"], ["foreign", "/ˈfɒrən/", "adj.", "外国的"], ["trip", "/trɪp/", "n.", "旅行"], ["still", "/stɪl/", "adv.", "仍然"], ["already", "/ɔːlˈredi/", "adv.", "已经"]], [["pigeon", "/ˈpɪdʒɪn/", "n.", "鸽子"], ["message", "/ˈmesɪdʒ/", "n.", "信息"], ["cover", "/ˈkʌvə(r)/", "v.", "覆盖；行过"], ["distance", "/ˈdɪstəns/", "n.", "距离"], ["request", "/rɪˈkwest/", "n.", "请求"], ["spare", "/speə(r)/", "adj.", "多余的"], ["service", "/ˈsɜːvɪs/", "n.", "服务"], ["upset", "/ʌpˈset/", "adj.", "不安的"], ["urgent", "/ˈɜːdʒənt/", "adj.", "紧急的"], ["phone", "/fəʊn/", "n.", "电话"]], [["beggar", "/ˈbeɡə(r)/", "n.", "乞丐"], ["food", "/fuːd/", "n.", "食物"], ["pocket", "/ˈpɒkɪt/", "n.", "口袋"], ["call", "/kɔːl/", "v.", "称呼；拜访"], ["later", "/ˈleɪtə(r)/", "adv.", "后来"], ["meal", "/miːl/", "n.", "一餐"], ["once", "/wʌns/", "adv.", "曾经；一次"], ["park", "/pɑːk/", "n.", "公园"], ["bench", "/bentʃ/", "n.", "长凳"], ["coin", "/kɔɪn/", "n.", "硬币"]], [["detective", "/dɪˈtektɪv/", "n.", "侦探"], ["airport", "/ˈeəpɔːt/", "n.", "机场"], ["expect", "/ɪkˈspekt/", "v.", "期待；预料"], ["valuable", "/ˈvæljuəbl/", "adj.", "贵重的"], ["parcel", "/ˈpɑːsl/", "n.", "包裹"], ["diamond", "/ˈdaɪəmənd/", "n.", "钻石"], ["steal", "/stiːl/", "v.", "偷"], ["main", "/meɪn/", "adj.", "主要的"], ["guard", "/ɡɑːd/", "n.", "守卫"], ["sand", "/sænd/", "n.", "沙子"]], [["competition", "/ˌkɒmpəˈtɪʃn/", "n.", "比赛"], ["neat", "/niːt/", "adj.", "整洁的"], ["path", "/pɑːθ/", "n.", "小路"], ["wooden", "/ˈwʊdn/", "adj.", "木制的"], ["pool", "/puːl/", "n.", "水池"], ["pleasant", "/ˈpleznt/", "adj.", "令人愉快的"], ["worst", "/wɜːst/", "adj.", "最差的"], ["win", "/wɪn/", "v.", "赢"], ["town", "/taʊn/", "n.", "城镇"], ["enter", "/ˈentə(r)/", "v.", "进入"]], [["welcome", "/ˈwelkəm/", "n.", "欢迎"], ["crowd", "/kraʊd/", "n.", "人群"], ["gather", "/ˈɡæðə(r)/", "v.", "聚集"], ["hand", "/hænd/", "n.", "手"], ["shout", "/ʃaʊt/", "v.", "喊叫"], ["refuse", "/rɪˈfjuːz/", "v.", "拒绝"], ["laugh", "/lɑːf/", "v.", "笑"], ["better", "/ˈbetə(r)/", "adj.", "更好的"], ["bell", "/bel/", "n.", "钟；铃"], ["ring", "/rɪŋ/", "v.", "鸣响"]], [["jazz", "/dʒæz/", "n.", "爵士乐"], ["musical", "/ˈmjuːzɪkl/", "adj.", "音乐的"], ["instrument", "/ˈɪnstrəmənt/", "n.", "乐器"], ["clavichord", "/ˈklævɪkɔːd/", "n.", "击弦古钢琴"], ["recently", "/ˈriːsntli/", "adv.", "最近"], ["damage", "/ˈdæmɪdʒ/", "v.", "损坏"], ["key", "/kiː/", "n.", "键；钥匙"], ["string", "/strɪŋ/", "n.", "弦"], ["shock", "/ʃɒk/", "v.", "使震惊"], ["allow", "/əˈlaʊ/", "v.", "允许"]], [["turn", "/tɜːn/", "n.", "行为；轮次"], ["deserve", "/dɪˈzɜːv/", "v.", "应得"], ["lawyer", "/ˈlɔːjə(r)/", "n.", "律师"], ["bank", "/bæŋk/", "n.", "银行"], ["salary", "/ˈsæləri/", "n.", "薪水"], ["immediately", "/ɪˈmiːdiətli/", "adv.", "立刻"], ["pay", "/peɪ/", "v.", "付款"], ["borrow", "/ˈbɒrəʊ/", "v.", "借入"], ["thank", "/θæŋk/", "v.", "感谢"], ["return", "/rɪˈtɜːn/", "v.", "归还；返回"]], [["luck", "/lʌk/", "n.", "运气"], ["captain", "/ˈkæptɪn/", "n.", "船长"], ["sail", "/seɪl/", "v.", "航行"], ["harbour", "/ˈhɑːbə(r)/", "n.", "港口"], ["proud", "/praʊd/", "adj.", "自豪的"], ["important", "/ɪmˈpɔːtnt/", "adj.", "重要的"], ["away", "/əˈweɪ/", "adv.", "离开"], ["set", "/set/", "v.", "放置；设置"], ["wave", "/weɪv/", "v.", "挥手"], ["letter", "/ˈletə(r)/", "n.", "信"]], [["group", "/ɡruːp/", "n.", "组合；团体"], ["pop", "/pɒp/", "n.", "流行音乐"], ["singer", "/ˈsɪŋə(r)/", "n.", "歌手"], ["club", "/klʌb/", "n.", "俱乐部"], ["performance", "/pəˈfɔːməns/", "n.", "演出"], ["occasion", "/əˈkeɪʒn/", "n.", "场合"], ["concert", "/ˈkɒnsət/", "n.", "音乐会"], ["appear", "/əˈpɪə(r)/", "v.", "出现"], ["most", "/məʊst/", "adv.", "最"], ["young", "/jʌŋ/", "adj.", "年轻的"]], [["experience", "/ɪkˈspɪəriəns/", "n.", "经验；经历"], ["manager", "/ˈmænɪdʒə(r)/", "n.", "经理"], ["abroad", "/əˈbrɔːd/", "adv.", "国外"], ["journey", "/ˈdʒɜːni/", "n.", "旅程"], ["translation", "/trænsˈleɪʃn/", "n.", "翻译"], ["board", "/bɔːd/", "n.", "船（甲板）"], ["language", "/ˈlæŋɡwɪdʒ/", "n.", "语言"], ["travel", "/ˈtrævl/", "v.", "旅行"], ["understand", "/ˌʌndəˈstænd/", "v.", "理解"], ["wave", "/weɪv/", "v.", "挥手"]]];
+const SPEECH = ["What small daily habit do you want to build this month, and why?", "Describe a person who has influenced you.", "Do you think reading is more useful than watching videos for learning? Why?", "If you could learn any new skill, what would it be?", "What does 'success' mean to you?", "Should students use mobile phones in class? Give your opinion.", "Talk about your favorite way to relax after study.", "Is it better to study alone or with others? Explain.", "Describe a place you would like to visit and why.", "How can we build good study habits?", "Do you prefer mornings or evenings for working? Why?", "Talk about a book or movie that changed how you think.", "What is the most useful English word you know, and how do you use it?", "If you had one free day, how would you spend it?", "Which English skill is hardest for you — listening, speaking, reading or writing — and how do you plan to improve it?", "If you could have a conversation with anyone in history, who and why?", "What is one thing you would change about your school or workplace?", "Describe a tradition or festival you enjoy most.", "Do you think traveling helps people understand the world better? Why?", "What advice would you give to someone just starting to learn English?"];
+const ENCY_FLAT = [{"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 1, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 2, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 3, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 4, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 5, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 6, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 7, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 8, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 9, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 10, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 11, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 12, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 13, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 14, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 15, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 16, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 17, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 18, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 19, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 20, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 21, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 22, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 23, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 24, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 25, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 26, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 27, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 28, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 29, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 30, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 31, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 32, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 33, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 34, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 35, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 36, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 37, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 38, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 39, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 40, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 41, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 42, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 43, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 44, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 45, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 46, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 47, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 48, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 49, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 50, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 51, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 52, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 53, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 54, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 55, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 56, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1WK4y1q7Vz", "title": "《美丽中国》", "page": 57, "total": 57, "desc": "每天听一段地道英文，边看中国风光边练听力、磨耳朵，适合精听与跟读。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 1, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 2, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 3, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 4, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 5, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 6, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 7, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 8, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 9, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 10, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 11, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 12, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 13, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 14, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 15, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 16, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 17, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 18, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 19, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 20, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 21, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 22, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 23, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 24, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 25, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 26, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 27, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 28, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 29, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 30, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 31, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 32, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 33, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 34, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 35, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 36, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 37, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 38, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 39, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 40, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 41, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 42, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 43, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 44, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 45, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 46, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 47, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 48, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 49, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}, {"bvid": "BV1mvfKYJEqf", "title": "【8分钟英语】油管播客合集", "page": 50, "total": 50, "desc": "每集约8分钟趣味英语播客，地道口语+实用表达，适合碎片时间泛听积累。"}];
+
+/* ===================== 登录与账号 ===================== */
+const ACCOUNTS = {
+    "cathy01":"6raAfFvN",
+    "cathy02":"j7dXiTJp",
+    "cathy03":"3U3jFebH",
+    "cathy04":"qmu6jiws",
+    "cathy05":"nzzrXgDd",
+    "cathy06":"3t63MdJ9",
+    "cathy07":"qbBUvuDn",
+    "cathy08":"S3pNNB4s",
+    "cathy09":"ZEnQvhNn",
+    "cathy10":"vmvwhvvN",
+    "cathy11":"83Gwa4px",
+    "cathy12":"TRMh6kxv",
+    "cathy13":"qYaSyiXm",
+    "cathy14":"EdFXS4jN",
+    "cathy15":"dBx5Yq3u",
+    "cathy16":"h2nxgamV",
+    "cathy17":"Ky9D6Mzk",
+    "cathy18":"YT2jAjuQ",
+    "cathy19":"6gYsBQ3V",
+    "cathy20":"8rD2Pdxk",
+    "cathy21":"pEVEmJ99",
+    "cathy22":"cAHYSXH2",
+    "cathy23":"TVUCtNmx",
+    "cathy24":"vHHfgwMT",
+    "cathy25":"4UMs9AaG",
+    "cathy26":"Wm967Yi9",
+    "cathy27":"GZZX5anD",
+    "cathy28":"xfCuwcnt",
+    "cathy29":"ZmD8FEJJ",
+    "cathy30":"jVrKupra",
+    "cathy31":"AE9jZwTN",
+    "cathy32":"fn8GW2px",
+    "cathy33":"r7Hqtv9w",
+    "cathy34":"V3dbbqbV",
+    "cathy35":"JbkzeRm2",
+    "cathy36":"6Qz2ZPiD",
+    "cathy37":"W9p4VxXZ",
+    "cathy38":"zkTwDFiM",
+    "cathy39":"X8pAHnjw",
+    "cathy40":"uJQKfpgb",
+    "cathy41":"gCxHCNsu",
+    "cathy42":"qNTkFHwC",
+    "cathy43":"wSB7D7Mr",
+    "cathy44":"JVZjnVA5",
+    "cathy45":"enUi6PUM",
+    "cathy46":"6JqxM3ad",
+    "cathy47":"AKThDhCQ",
+    "cathy48":"dgQyWwgr",
+    "cathy49":"rwyJDBkM",
+    "cathy50":"7ymkjmWQ"
+  };
+const MAX_DEVICES = 5;
+
+function getDeviceId(){
+  let d = localStorage.getItem('nce2_device');
+  if(!d){
+    d = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2,10);
+    localStorage.setItem('nce2_device', d);
+  }
+  return d;
+}
+function isLoggedIn(){
+  const u = localStorage.getItem('nce2_user');
+  return !!u && ACCOUNTS[u] !== undefined;
+}
+/* 设备上限登记：纯静态站点无法跨设备统计，这里做本浏览器本地登记，
+   用于接入后端时平滑过渡；真正的“5 台设备上限”需后端持久化计数。 */
+function registerDevice(username){
+  try{
+    let map = JSON.parse(localStorage.getItem('nce2_devmap')||'{}');
+    const did = getDeviceId();
+    let list = map[username] ? map[username].slice() : [];
+    if(!list.includes(did)) list.push(did);
+    map[username] = list;
+    localStorage.setItem('nce2_devmap', JSON.stringify(map));
+    return list.length <= MAX_DEVICES;
+  }catch(e){ return true; }
+}
+function tryLogin(rawU, rawP){
+  const u = (rawU||'').trim().toLowerCase();
+  const p = rawP||'';
+  if(!u || !p) return {ok:false, msg:'请输入用户名和密码'};
+  if(ACCOUNTS[u] === undefined) return {ok:false, msg:'用户名不存在'};
+  if(ACCOUNTS[u] !== p) return {ok:false, msg:'密码错误'};
+  if(!registerDevice(u)) return {ok:false, msg:'该账号已达 5 台设备上限，已停用'};
+  localStorage.setItem('nce2_user', u);
+  return {ok:true};
+}
+function showLogin(){
+  const ov = document.getElementById('loginOverlay');
+  if(ov) ov.classList.remove('hidden');
+  const lo = document.getElementById('btnLogout');
+  if(lo) lo.style.display='none';
+  const lu = document.getElementById('lu'); if(lu) lu.focus();
+}
+function setupApp(){
+  const ov = document.getElementById('loginOverlay');
+  if(ov) ov.classList.add('hidden');
+  const lo = document.getElementById('btnLogout');
+  if(lo) lo.style.display='';
+  const sel = document.getElementById('lessonSelect');
+  if(sel && sel.options.length===0){
+    for(let i=1;i<=96;i++){
+      const o=document.createElement('option');
+      o.value=i; o.textContent="第 "+i+" 课 · "+(NCE2[i-1].title);
+      sel.appendChild(o);
+    }
+  }
+  loadLesson();
+  buildState();
+  render();
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const u=document.getElementById('lu').value;
+  const p=document.getElementById('lp').value;
+  const r=tryLogin(u,p);
+  if(!r.ok){ document.getElementById('loginErr').textContent=r.msg; return; }
+  document.getElementById('loginErr').textContent='';
+  document.getElementById('lp').value='';
+  setupApp();
+});
+document.getElementById('btnLogout').addEventListener('click', function(){
+  localStorage.removeItem('nce2_user');
+  showLogin();
+});
+
+/* ===================== 状态 ===================== */
+let state = null;
+let timerIv = null, readyIv = null;
+
+function dayNumber(){ return Math.floor(Date.now()/86400000); }
+function todayStr(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,'0')+"-"+String(d.getDate()).padStart(2,'0');
+}
+
+let currentLesson = 1;
+function loadLesson(){
+  const saved = parseInt(localStorage.getItem('nce2_lesson')||'1',10);
+  currentLesson = (isNaN(saved)||saved<1||saved>96) ? 1 : saved;
+}
+function buildState(lessonNo){
+  if(lessonNo!==undefined){
+    currentLesson = ((lessonNo-1+96)%96)+1;
+  }
+  const idx = currentLesson-1;
+  state = {
+    date: todayStr(),
+    dayIndex: idx,
+    lessonNo: currentLesson,
+    nce: NCE2[idx],
+    vocabulary: VOCAB[idx % VOCAB.length],
+    speechIdx: idx % SPEECH.length,
+    enc: ENCY_FLAT[idx % ENCY_FLAT.length],
+    speech: SPEECH[idx % SPEECH.length]
+  };
+  try{ localStorage.setItem('nce2_lesson', String(currentLesson)); }catch(e){}
+}
+
+/* ===================== 渲染 ===================== */
+function openBilibili(bvid, page){ window.open("https://www.bilibili.com/video/"+bvid+(page?("?p="+page):""),"_blank","noopener"); }
+function openImage(src){ window.open(src,"_blank","noopener"); }
+
+function render(){
+  if(!state) buildState();
+  const s = state;
+  const unitNum = String(s.dayIndex+1).padStart(2,'0');
+  const gramSrc = "assets/grammar/unit_"+unitNum+".jpg";
+  const videoSrc = "https://player.bilibili.com/player.html?bvid="+s.nce.bvid+"&page="+s.nce.page+"&high_quality=1&danmaku=0";
+  const enc = s.enc;
+  const encSrc = "https://player.bilibili.com/player.html?bvid="+enc.bvid+"&page="+enc.page+"&high_quality=1&danmaku=0";
+  const app = document.getElementById('app');
+  app.innerHTML = `
+  <div class="card">
+    <h2>🎬 新概念英语第二册 · 第 ${s.nce.lesson} 课</h2>
+    <div class="lesson-note">📺 ${s.nce.title}</div>
+    <div class="video-box"><iframe src="${videoSrc}" referrerpolicy="no-referrer" allowfullscreen scrolling="no"></iframe></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 4px">
+      <button onclick="openBilibili('${s.nce.bvid}', ${s.nce.page})">🔗 在哔哩哔哩打开第 ${s.nce.lesson} 课</button>
+    </div>
+    <div class="tip">💡 若上方视频加载失败，点击按钮即可在哔哩哔哩稳定观看本课。</div>
+    <div class="task">观看任务：先盲听一遍 → 打开英文字幕跟读 → 摘抄 2 句你喜欢的表达。</div>
+  </div>
+
+  <div class="card">
+    <h2>📖 视频生词 <span style="font-size:12px;font-weight:500;color:var(--sub)">（共 ${s.vocabulary.length} 个）</span></h2>
+    <div style="margin-bottom:10px"><button id="btnDictation">🔊 生词听写</button> <button id="btnShowMean">显示释义</button></div>
+    <ol class="vocab" id="vocabList">
+      ${s.vocabulary.map((v,i)=>`<li><span class="w">${i+1}. ${v[0]}</span> <span class="ph">${v[1]}</span> <span class="pos">${v[2]}</span> <span class="m">${v[3]}</span></li>`).join('')}
+    </ol>
+  </div>
+
+  <div class="card grammar">
+    <h2>📚 本课语法点（English Grammar in Use）</h2>
+    <div class="unit">Unit ${s.dayIndex+1}</div>
+    <div class="tip">👇 点击可放大查看原图</div>
+    <img class="gram-img" src="${gramSrc}" alt="Unit ${s.dayIndex+1}" onclick="openImage('${gramSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+    <div style="display:none;color:var(--red);font-size:14px;">⚠️ 语法截图未找到：assets/grammar/unit_${unitNum}.jpg</div>
+  </div>
+
+  <div class="card ency">
+    <h2>🌍 英语百科（课外拓展）</h2>
+    <div class="lesson-note">📺 本课推荐：${enc.title}（第 ${enc.page} / ${enc.total} 集）</div>
+    <div class="tip">${enc.desc}</div>
+    <div class="video-box"><iframe src="${encSrc}" referrerpolicy="no-referrer" allowfullscreen scrolling="no"></iframe></div>
+    <div style="margin-top:8px"><button onclick="openBilibili('${enc.bvid}')">🔗 在哔哩哔哩打开原视频</button></div>
+  </div>
+
+  <div class="card">
+    <h2>🎤 今日即兴演讲题目</h2>
+    <div class="speech-topic">${s.speech}</div>
+    <div class="tip">💡 演讲小提示：开头引入 + 2 个论点 + 简短结尾，不用写完整稿子，列关键词即可。</div>
+    <div class="durations">
+      <button data-min="1">开始 1 分钟倒计时</button>
+      <button data-min="2">开始 2 分钟倒计时</button>
+      <button data-min="3">开始 3 分钟倒计时</button>
+      <button id="btnNewTopic">🔄 换演讲题目</button>
+    </div>
+    <div class="timer">
+      <div class="status" id="timerStatus"></div>
+      <div class="big" id="timerBig">--:--</div>
+      <div class="log" id="timerLog"></div>
+      <div class="logbox" id="timerLogBox"></div>
+      <button class="replay" id="btnStopTimer">停止计时</button>
+    </div>
+  </div>
+  `;
+  document.getElementById('diffBadge').textContent = "第 "+s.lessonNo+" 课 / 96";
+  const sel=document.getElementById('lessonSelect'); if(sel) sel.value = s.lessonNo;
+  const pt=document.getElementById('progressText'); if(pt) pt.textContent = "已学至第 "+s.lessonNo+" 课 / 共 96 课";
+  bindEvents();
+}
+
+function bindEvents(){
+  document.getElementById('btnDictation').onclick = ()=>{
+    document.getElementById('vocabList').classList.add('hide');
+    document.getElementById('btnShowMean').style.display='';
+  };
+  document.getElementById('btnShowMean').onclick = ()=>{
+    document.getElementById('vocabList').classList.remove('hide');
+  };
+  document.getElementById('btnNewTopic').onclick = ()=>{
+    state.speechIdx = (state.speechIdx+1) % SPEECH.length;
+    state.speech = SPEECH[state.speechIdx];
+    render();
+  };
+  document.querySelectorAll('.durations button[data-min]').forEach(b=>{
+    b.onclick = ()=> startCountdown(parseInt(b.dataset.min,10));
+  });
+  document.getElementById('btnStopTimer').onclick = stopTimer;
+}
+
+/* ===================== 倒计时 ===================== */
+function fmt(sec){
+  const m=Math.floor(sec/60), s=sec%60;
+  return String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
+}
+function startCountdown(min){
+  stopTimer();
+  const total = min*60;
+  let remaining = total;
+  const milestones = {
+    1:[[30,"🟡 还有 30 秒，尽快收尾总结！"],[10,"🟠 还有 10 秒，准备结束你的观点！"],[0,"⏰ 时间结束！演讲完成，可以复盘自己的表达。"]],
+    2:[[60,"🟡 还有 1 分钟，把控结尾！"],[30,"🟠 还有 30 秒，尽快收尾总结！"],[0,"⏰ 时间结束！演讲完成，可以复盘自己的表达。"]],
+    3:[[120,"🟢 还有 2 分钟，注意节奏，展开你的 2 个论点。"],[60,"🟡 还有 1 分钟，把控结尾！"],[30,"🟠 还有 30 秒，尽快收尾总结！"],[10,"🔴 还有 10 秒，准备结束你的观点！"],[0,"⏰ 时间结束！演讲完成，可以复盘自己的表达。"]]
+  }[min];
+  const statusEl=document.getElementById('timerStatus');
+  const bigEl=document.getElementById('timerBig');
+  const logEl=document.getElementById('timerLog');
+  const boxEl=document.getElementById('timerLogBox');
+  const stopBtn=document.getElementById('btnStopTimer');
+  boxEl.classList.remove('show'); boxEl.innerHTML='';
+  stopBtn.style.display='inline-block';
+  let mi=0;
+  let r=3;
+  statusEl.textContent='准备：'+r;
+  bigEl.textContent=fmt(remaining);
+  logEl.textContent='';
+  readyIv=setInterval(()=>{
+    r--;
+    if(r>0){ statusEl.textContent='准备：'+r; }
+    else{
+      clearInterval(readyIv); readyIv=null;
+      statusEl.textContent='→ 开始演讲！';
+      timerIv=setInterval(()=>{
+        remaining--;
+        bigEl.textContent=fmt(Math.max(remaining,0));
+        while(mi<milestones.length && milestones[mi][0]===remaining){
+          const msg=milestones[mi][1];
+          logEl.textContent=msg;
+          const d=document.createElement('div'); d.textContent='【时间提醒】'+msg; boxEl.appendChild(d);
+          mi++;
+        }
+        if(remaining<=0){ bigEl.textContent='00:00'; stopTimer(); }
+      },1000);
+    }
+  },1000);
+}
+function stopTimer(){
+  if(timerIv){clearInterval(timerIv);timerIv=null;}
+  if(readyIv){clearInterval(readyIv);readyIv=null;}
+  const stopBtn=document.getElementById('btnStopTimer');
+  if(stopBtn) stopBtn.style.display='none';
+  const box=document.getElementById('timerLogBox');
+  if(box) box.classList.add('show');
+}
+
+/* ===================== 顶部按钮 ===================== */
+function gotoLesson(n){ buildState(n); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+document.getElementById('btnPrev').onclick = ()=> gotoLesson(currentLesson-1);
+document.getElementById('btnNext').onclick = ()=> gotoLesson(currentLesson+1);
+document.getElementById('btnHome').onclick = ()=> gotoLesson(1);
+document.getElementById('lessonSelect').onchange = (e)=> gotoLesson(parseInt(e.target.value,10));
+document.getElementById('btnReplay').onclick = ()=>{
+  if(!state) buildState();
+  const s=state;
+  const lines=[];
+  lines.push("【Cathy's 英语每日打卡 · 复盘】");
+  lines.push("📅 日期："+s.date+"　进度：第 "+s.lessonNo+" / 96 课");
+  lines.push("\n🎬 新概念二 第"+s.nce.lesson+"课："+s.nce.title);
+  lines.push("\n📖 生词：");
+  s.vocabulary.forEach((v,i)=>lines.push((i+1)+". "+v[0]+" "+v[1]+" "+v[2]+" "+v[3]));
+  lines.push("\n📚 语法：Unit "+s.lessonNo+"（见页面截图）");
+  lines.push("\n🌍 英语百科："+s.enc.title+" 第 "+s.enc.page+" / "+s.enc.total+" 集");
+  lines.push("\n🎤 演讲题："+s.speech);
+  alert(lines.join("\n"));
+};
+
+/* 初始渲染：已登录则直接进入，否则显示登录页 */
+(function init(){
+  if(isLoggedIn()){ setupApp(); }
+  else { showLogin(); }
+})();
+</script>
+</body>
+</html>
